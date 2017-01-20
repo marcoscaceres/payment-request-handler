@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Payment-Request Handler API
+    </title>
+    <meta charset="utf-8">
+    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class=
+    "remove">
+    </script>
+    <script class="remove">
+    var respecConfig = {
+    shortName: "payment-handler",
+    //edDraftURI: "https://w3c.github.io/webpayments-payment-apps-api/",
+    specStatus: "unofficial",
+    editors: [{
+      name: "Marcos Cáceres"
+    }],
+    license: "w3c-software-doc",
+    wg: "Web Payments Working Group",
+    wgURI: "https://www.w3.org/Payments/WG/",
+    wgPublicList: "public-payments-wg",
+    wgPatentURI: "https://www.w3.org/2004/01/pp-impl/83744/status",
+    issueBase: "https://github.com/w3c/webpayments-payment-apps-api/issues/",
+    };
+    </script>
+  </head>
+  <body>
+    <section id="abstract">
+      <p>
+        This specification allows a web application to handle requests for
+        payment on the end-user's behalf. The API also allows a web application
+        to manage multiple payment methods for the user (e.g., multiple credit
+        cards, proprietary payment methods, etc.). The API relies on a service
+        worker to handle the request for payment, and affords a web application
+        the ability to present a UI suitable for fulfilling a request for
+        payment.
+      </p>
+    </section>
+    <section id="sotd"></section>
+    <section class="informative">
+      <h2>
+        Usage examples
+      </h2>
+      <section class="informative">
+        <h3>
+          Registering to handle payments
+        </h3>
+        <p>
+          The following example shows how a web application requests permission
+          to handle payment requests from the end-user. It also shows how a web
+          application can then start to manage payment methods on behalf of the
+          end-user.
+        </p>
+        <pre class="example" title="Payment Handler Registration" data-include=
+        "examples/register_paymenthandler.js"></pre>
+      </section>
+      <section class="informative">
+        <h3>
+          Handling a request for payment
+        </h3>
+        <p>
+          The following shows how to process a request for payment via a
+          service worker. In this example, the credit card information is
+          dynamically generated.
+        </p>
+        <pre class="example" title=
+        "Handling 'onpaymentrequest' in ServiceWorker" data-include=
+        "examples/sw_onpaymentrequest.js">
+        </pre>
+      </section>
+      <section class="informative">
+        <h3>
+          Checking if the app can make a payment
+        </h3>
+        <p>
+          The following shows how a web application can respond to a merchant's
+          request to check if 
+        </p>
+        <pre class="example" title="Using `canMakePayment()`" data-include=
+        "examples/canmakepayment.js"></pre>
+      </section>
+    </section>
+    <section>
+      <h2>
+        Model
+      </h2>
+      <p>
+        To enable web applications to handle requests for payment, this
+        specification defines the following:
+      </p>
+      <ul>
+        <li>A <a>PaymentManager</a>, which allows web applications to request
+        permission to handle payment request.
+        </li>
+        <li>An <a>PaymentMethodMap</a> API
+        (<a>ServiceWorkerRegistration.paymentManager</a>) to manage, through
+        usual map-like asynchronous operations, <a>payment methods</a> that the
+        web application is capable of handling.
+        </li>
+        <li>A means to be notified of requests for payment, via a service
+        worker event ("paymentrequest" event type) - and a corresponding
+        <a>PaymentRequestEvent</a>, that contains the information about the
+        payment request.
+        </li>
+        <li>A means for third-party sites to check if a registered payment
+        handler can potentially handle a request for payment, again through a
+        service worker. This is done through a "canMakePayment" event and a
+        corresponding <a>CanMakePaymentEvent</a> interface.
+        </li>
+        <li>A means to open a payment-specific UI from the service worker, via
+        <a>PaymentRequestEvent.openClientWindow()</a>. If UI is needed to
+        complete a purchase, it's within this <a>WindowClient</a> that a
+        <a>payment flow</a> takes place.
+        </li>
+      </ul>
+      <p>
+        If granted the "<a>payment-request-handler</a>" permission, the web
+        application can manage <a>payment methods</a> (e.g., credit cards,
+        communication with a proprietary payment provider, etc.) on behalf of
+        the user. This is done by via the a <a>PaymentMethodMap</a>, which is a
+        persistent data-store for payment methods.
+      </p>
+      <p>
+        Handling payment requests is done through an "onpaymentrequest" event
+        associated with a service worker registration: when there is a payment
+        request that matches a payment method supported by the web application
+        (e.g., basic card), the service worker is notified via an event. More
+        specifically, it defines how to register web applications with user
+        agents, gives recommendations on how the user agents can present
+        registration information to user, and the interaction between a payment
+        handler and another that has made a request for payment using the
+        <a data-cite="!payment-request">Payment Request API.</a>
+      </p>
+    </section>
+    <section>
+      <h2>
+        Identity
+      </h2>
+      <p>
+        For the purpose of handling payment requests, a web application is
+        identified by its <a data-cite="!ORIGIN">origin</a>.
+      </p>
+      <p>
+        As <a>origin</a>'s are not the most user-friendly way for end-users to
+        recognize a web application, it is RECOMMENDED that web applications
+        support the <cite><a data-cite="appmanifest">Web App
+        Manifest</a></cite> specification ([[!appmanifest]]). The
+        [[!appmanifest]] specification provides end-user friendly meta-data and
+        icons that can help end-users identify a web application.
+      </p>
+    </section>
+    <section>
+      <h2>
+        Permission
+      </h2>
+      <p>
+        The <dfn>"payment-request-handler"</dfn> permission is the permission
+        associated with the usage of this specification. It is a <a data-cite=
+        "!permissions#boolean-feature">boolean feature</a>.
+      </p>
+    </section>
+    <section>
+      <h3>
+        Extensions to the <a>ServiceWorkerRegistration</a> interface
+      </h3>
+      <pre class="idl">
+        partial interface ServiceWorkerRegistration {
+          [SameObject] readonly attribute paymentManager paymentManager;
+        };
+      </pre>
+    </section>
+    <section>
+      <h2>
+        <dfn>paymentManager</dfn> interface
+      </h2>
+      <pre class="idl">
+        interface paymentManager {
+          readonly attribute PaymentMethodMap paymentMethods;
+          Promise&lt;PermissionState&gt; requestToHandlePayments();
+        };
+        </pre>
+    </section>
+    <section>
+      <h2>
+        <dfn>PaymentMethodMap</dfn> interface
+      </h2>
+      <pre class="idl">
+        [Exposed=(Window,Worker)]
+        interface PaymentMethodMap {
+          [NewObject] Promise&lt;boolean&gt; delete(DOMString methodKey);
+          [NewObject] Promise&lt;PaymentMethodDetails&gt; get(DOMString methodKey);
+          [NewObject] Promise&lt;sequence&lt;DOMString&gt;&gt; keys();
+          [NewObject] Promise&lt;boolean&gt; has(DOMString methodKey);
+          [NewObject] Promise&lt;void&gt; set(DOMString methodKey, PaymentMethodDetails details);
+          // This doesn't exist yet in WebIDL I think - need to coordinate with
+          // Domenic.
+          // asyncIterator = { record&lt;DOMString, PaymentMethodDetails&gt;&gt; }
+        };
+        </pre>
+    </section>
+    <section>
+      <pre class="idl">
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler onpaymentrequest;
+          attribute EventHandler oncanMakePayment;
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="PaymentRequestDetails" data-link-for=
+    "PaymentRequestDetails">
+      <h2>
+        <dfn>PaymentRequestDetails</dfn> interface
+      </h2>
+      <pre class="idl">
+      interface PaymentRequestDetails : EventTarget {
+        readonly attribute DOMString? id;
+        readonly attribute PaymentItem total;
+        readonly attribute DisplayItems displayItems;
+        readonly attribute FrozenArray&lt;requestedFields&gt; requestedFields;
+        readonly attribute any data;
+        attribute EventHander onabort;
+      };
+      </pre>
+    </section>
+    <section data-dfn-for="PaymentRequestEvent" data-link-for=
+    "PaymentRequestEvent">
+      <h2>
+        <dfn>PaymentRequestEvent</dfn> interface
+      </h2>
+      <pre class="idl">
+        [Exposed=ServiceWorker,
+        Constructor(DOMString type, optional PaymentRequestEventInit eventInitDict)]
+        interface PaymentRequestEvent : ExtendableEvent {
+          readonly attribute PaymentRequest requestData;
+          readonly attribute USVString origin;
+          Promise&lt;WindowClient&gt; openClientWindow(USVString url);
+          void respondWith(Promise&lt;PaymentResponse&gt; paymentResponse);
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="PaymentRequestEventInit" data-link-for=
+    "PaymentRequestEventInit">
+      <h2>
+        <dfn>PaymentRequestEventInit</dfn> interface
+      </h2>
+      <pre class="idl">
+        dictionary PaymentRequestEventInit : EventInit {
+          USVString origin = "";
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="RequestedFields" data-link-for="RequestedFields">
+      <h2>
+        <dfn>RequestedFields</dfn> enum
+      </h2>
+      <pre class="idl">
+        enum RequestedFields {
+          "payerEmail",
+          "payerName",
+          "payerPhone",
+          "shipping",
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="PaymentResponse" data-link-for="PaymentResponse">
+      <h2>
+        <dfn>PaymentResponse</dfn> interface
+      </h2>
+      <pre class="idl">
+        [Constructor(DOMString id, DOMString methodName, PaymentResponseInit details)]
+        partial interface PaymentResponse {
+          Promise&lt;PaymentDetails&gt; updateShippingAddress(ShippingAddress? newAddress);
+          Promise&lt;PaymentDetails&gt; updateShippingOption(DOMString id);
+          readonly attribute Promise&lt;PaymentComplete&gt; isComplete;
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="CanMakePaymentEvent" data-link-for=
+    "CanMakePaymentEvent">
+      <h2>
+        <dfn>CanMakePaymentEvent</dfn> interface
+      </h2>
+      <pre class="idl">
+        [Exposed=ServiceWorker,
+        Constructor(DOMString type, optional CanMakePaymentEventInit eventInitDict)]
+        interface CanMakePaymentEvent : ExtendableEvent {
+          readonly attribute FrozenArray&lt;PaymentMethod&gt; methods;
+          readonly attribute USVString origin;
+          void canMakePayment(Promise&lt;Boolean&gt; result);
+        };
+      </pre>
+    </section>
+    <section data-dfn-for="CanMakePaymentEventInit" data-link-for=
+    "CanMakePaymentEventInit">
+      <h2>
+        <dfn>CanMakePaymentEventInit</dfn> dictionary
+      </h2>
+      <pre class="idl">
+        dictionary CanMakePaymentEventInit : EventInit {
+          required sequence&lt;DOMString&gt; paymentMethods;
+        };
+      </pre>
+    </section>
+    <section>
+      <h2>
+        Dependencies
+      </h2>
+      <p>
+        The following are defined in [[!SERVICE-WORKERS]]:
+      </p>
+      <ul>
+        <li>
+          <code><dfn data-cite=
+          "!SERVICE-WORKERS#ServiceWorkerRegistration">ServiceWorkerRegistration</dfn></code>
+        </li>
+      </ul>
+    </section>
+    <section id="conformance"></section>
+    <section class="appendix" id="idl-index"></section>
+  </body>
+</html>
