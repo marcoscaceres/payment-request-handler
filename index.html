@@ -58,10 +58,10 @@
         As such, the requirements are that this specification can:
       </p>
       <ul>
-        <li>handle invocation of methods from the <a data-cite="payment-request">Payment Request
-        API</a> and facilitate communication between a
-        <a>PaymentRequest</a>, the end-user (through a UI), and a
-        <a>PaymentResponse</a> on a third party site.
+        <li>handle invocation of methods from the <a data-cite=
+        "payment-request">Payment Request API</a> and facilitate communication
+        between a <a>PaymentRequest</a>, the end-user (through a UI), and a <a>
+          PaymentResponse</a> on a third party site.
         </li>
         <li>facilitate the display, and management, of the registered payment
         methods in multiple contexts - including in web pages and in browser
@@ -231,14 +231,27 @@
         </pre>
     </section>
     <section>
-      <h2><dfn>PaymentMethodDetails</dfn> dictionary</h2>
+      <h2>
+        <dfn>PaymentMethodDetails</dfn> dictionary
+      </h2>
       <pre class="idl">
         dictionary PaymentMethodDetails {
           required DOMString name;
-          required Sequence&lt;DOMString> method;
-          USVString image;
-          USVString icon;
+          required Sequence&lt;DOMString&gt; method;
+          sequence &lt;PaymentMethodIcon&gt; icons;
         };
+      </pre>
+    </section>
+    <section>
+      <h2>
+        <dfn>PaymentMethodIcon</dfn> dictionary
+      </h2>
+      <pre class="idl">
+        dictionary PaymentMethodIcon {
+          USVString src;
+          DOMString sizes;
+          DOMString type;
+        }
       </pre>
     </section>
     <section>
