@@ -4,7 +4,7 @@ window.addEventListerner("DOMContentLoaded", async() => {
   if (!paymentAppManager) {
     return; // not supported, so bail out.
   }
-  cont state = await navigator.permissions.query({ name: "paymenthandler" })
+  const state = await navigator.permissions.query({ name: "paymenthandler" })
   switch (state) {
     case "denied":
       return;
