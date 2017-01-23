@@ -24,15 +24,21 @@ async methodRegistration(methods) {
   const promisesToAdd = [
     methods.set("visa-4756", {
       name: "Visa ending ****4756",
-      enabledMethods: ["basic-card"]
+      methods: ["basic-card"],
+      image: "/images/bobpay_large.png",
+      icon: "/images/bob_icon.png",
     }),
     methods.set("bobpay", {
       name: "My Bob Pay Account: john@example.com",
-      enabledMethods: ["https://bobpay.com/"]
+      methods: ["https://bobpay.com/"],
+      image: "/images/bobpay_large.png",
+      icon: "/images/bob_icon.png",
     }),
     methods.set("visa-4756", {
-      name: "Visa ending ****4756",
-      enabledMethods: ["basic-card"]
+      name: "Visa ending ***4756",
+      methods: ["basic-card"],
+      image: "user/images/visa-2.png",
+      icon: "/images/visa.png",
     }),
   ];
   await Promise.all(promisesToAdd);
