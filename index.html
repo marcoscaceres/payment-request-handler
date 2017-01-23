@@ -10,18 +10,18 @@
     </script>
     <script class="remove">
     var respecConfig = {
-    shortName: "payment-handler",
-    //edDraftURI: "https://w3c.github.io/webpayments-payment-apps-api/",
-    specStatus: "unofficial",
-    editors: [{
-      name: "Marcos Cáceres"
-    }],
-    license: "w3c-software-doc",
-    wg: "Web Payments Working Group",
-    wgURI: "https://www.w3.org/Payments/WG/",
-    wgPublicList: "public-payments-wg",
-    wgPatentURI: "https://www.w3.org/2004/01/pp-impl/83744/status",
-    issueBase: "https://github.com/w3c/webpayments-payment-apps-api/issues/",
+      shortName: "payment-handler",
+      edDraftURI: "https://marcoscaceres.github.io/payment-request-handler/",
+      specStatus: "unofficial",
+      editors: [{
+        name: "Marcos Cáceres"
+      }],
+      license: "w3c-software-doc",
+      wg: "Web Payments Working Group",
+      wgURI: "https://www.w3.org/Payments/WG/",
+      wgPublicList: "public-payments-wg",
+      wgPatentURI: "https://www.w3.org/2004/01/pp-impl/83744/status",
+      issueBase: "https://marcoscaceres.github.io/payment-request-handler/issues/",
     };
     </script>
   </head>
@@ -38,6 +38,37 @@
       </p>
     </section>
     <section id="sotd"></section>
+    <section class="informative">
+      <h2>
+        Use cases and requirements
+      </h2>
+      <p>
+        The use cases for this specification:
+      </p>
+      <ul>
+        <li>Register, with user consent, to handle <a>requests for payment</a>
+        of particular types (e.g., credit cards, a proprietary payment method).
+        </li>
+        <li>Allow the end-user to manage <a>payment methods</a> (adding,
+        deleting, modifying, etc.) - and for these methods to be available as
+        payment options upon request for payment.
+        </li>
+      </ul>
+      <p>
+        As such, the requirements are that this specification can:
+      </p>
+      <ul>
+        <li>handle invocation of methods from the <a data-cite="payment-request">Payment Request
+        API</a> and facilitate communication between a
+        <a>PaymentRequest</a>, the end-user (through a UI), and a
+        <a>PaymentResponse</a> on a third party site.
+        </li>
+        <li>facilitate the display, and management, of the registered payment
+        methods in multiple contexts - including in web pages and in browser
+        generated UIs.
+        </li>
+      </ul>
+    </section>
     <section class="informative">
       <h2>
         Usage examples
@@ -75,7 +106,7 @@
         </h3>
         <p>
           The following shows how a web application can respond to a merchant's
-          request to check if 
+          request to check if it can make an payment.
         </p>
         <pre class="example" title="Using `canMakePayment()`" data-include=
         "examples/canmakepayment.js"></pre>
@@ -198,6 +229,17 @@
           // asyncIterator = { record&lt;DOMString, PaymentMethodDetails&gt;&gt; }
         };
         </pre>
+    </section>
+    <section>
+      <h2><dfn>PaymentMethodDetails</dfn> dictionary</h2>
+      <pre class="idl">
+        dictionary PaymentMethodDetails {
+          required DOMString name;
+          required Sequence&lt;DOMString> method;
+          USVString image;
+          USVString icon;
+        };
+      </pre>
     </section>
     <section>
       <pre class="idl">
