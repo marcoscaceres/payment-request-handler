@@ -19,7 +19,7 @@ window.addEventListerner("DOMContentLoaded", async() => {
   await methodRegistration(paymentAppManager.methods);
 }, { once: true });
 
-async methodRegistration(methods) {
+function methodRegistration(methods) {
   // Multiple icons in a single bundle
   const visaIcons = {
     src: "/images/visa.ico",
@@ -49,5 +49,5 @@ async methodRegistration(methods) {
       ],
     }),
   ];
-  await Promise.all(promisesToAdd);
+  return Promise.all(promisesToAdd);
 };
