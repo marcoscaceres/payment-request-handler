@@ -250,6 +250,21 @@
     </section>
     <section>
       <h2>
+        Extensions to <dfn>PaymentRequest</dfn> interface
+      </h2>
+      <pre class="idl">
+        interface PaymentRequest : EventTarget {
+          readonly attribute FrozenArray&lt;PaymentMethod&gt; supportedMethods;
+          readonly attribute DOMString? paymentRequestID;
+          readonly attribute PaymentItem total;
+          readonly attribute DisplayItems displayItems;
+          readonly attribute sequence&lt;RequestedData&gt; requestedFields;
+          attribute EventHander onabort;
+        };
+      </pre>
+    </section>
+    <section>
+      <h2>
         <dfn>PaymentMethodDetails</dfn> dictionary
       </h2>
       <pre class="idl">
@@ -338,7 +353,9 @@
     </section>
     <section data-dfn-for="PaymentResponse" data-link-for="PaymentResponse">
       <h2>
-        <dfn>PaymentResponse</dfn> interface
+        Extensions to the <dfn data-cite=
+        "payment-request#paymentresponse-interface">PaymentResponse</dfn>
+        interface
       </h2>
       <pre class="idl">
         [Constructor(DOMString id, DOMString methodName, PaymentResponseInit details)]
