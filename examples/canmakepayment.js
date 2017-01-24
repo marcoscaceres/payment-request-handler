@@ -1,9 +1,4 @@
 addEventListener("canmakepayment", async ev => {
-  // Check if this origin is allowed to talk to us.
-  const isAllowed = await verifyOriginRelationship(ev.origin);
-  if (!isAllowed) {
-    return ev.canMakePayment(false);
-  }
   const { paymentMethods } = registration.paymentManager;
   let canDoIt = true;
   // Query the user's payment methods, to see if we have the requested ones
