@@ -358,7 +358,6 @@
         Constructor(DOMString type, optional CanMakePaymentEventInit eventInitDict)]
         interface CanMakePaymentEvent : ExtendableEvent {
           readonly attribute FrozenArray&lt;PaymentMethod&gt; methods;
-          readonly attribute USVString origin;
           void canMakePayment(Promise&lt;Boolean&gt; result);
         };
       </pre>
