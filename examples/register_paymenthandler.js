@@ -33,8 +33,8 @@ function methodRegistration(methods) {
       methods: ["basic-card"],
       icons: [visaIcons],
     }),
-    methods.set("visa-4756", {
-      name: "Visa ending ***4756",
+    methods.set("visa-6789", {
+      name: "Visa ending ***6789",
       methods: ["basic-card"],
       icons: [visaIcons],
     }),
