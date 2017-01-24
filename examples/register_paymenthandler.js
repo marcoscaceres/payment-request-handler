@@ -1,7 +1,7 @@
 // Let's get permission!
 window.addEventListerner("DOMContentLoaded", async() => {
-  const { paymentAppManager } = await navigator.serviceWorker.register('/sw.js');
-  if (!paymentAppManager) {
+  const { paymentManager } = await navigator.serviceWorker.register('/sw.js');
+  if (!paymentManager) {
     return; // not supported, so bail out.
   }
   const state = await navigator.permissions.query({ name: "paymenthandler" })
@@ -9,17 +9,17 @@ window.addEventListerner("DOMContentLoaded", async() => {
     case "denied":
       return;
     case "prompt":
-      const result = await paymentAppManager.requestPermission();
+      const result = await paymentManager.register();
       if (result === "denied") {
         return;
       }
       break;
   }
   // Excellent, we go it! Let's now set up the user's cards.
-  await methodRegistration(paymentAppManager.methods);
+  await methodRegistration(paymentManager);
 }, { once: true });
 
-function methodRegistration(methods) {
+function methodRegistration({ methods }) {
   // Multiple icons in a single bundle
   const visaIcons = {
     src: "/images/visa.ico",
