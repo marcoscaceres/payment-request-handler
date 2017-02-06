@@ -15,7 +15,7 @@ window.addEventListerner("DOMContentLoaded", async() => {
       }
       break;
   }
-  // Excellent, we go it! Let's now set up the user's cards.
+  // Excellent, we got it! Let's now set up the user's cards.
   await methodRegistration(paymentManager);
 }, { once: true });
 

@@ -29,12 +29,12 @@ async function createResponseAndProcessPayment(ev) {
   const init = Object.assign({}, {fields}, {details: creditCardDetails});
   // PaymentResponse can now be constructed and returned.
   const response = new PaymentResponse(responseId, "basic-card#visa", init);
-  ev.waitUntil(coordiantePurchaseWithUser(ev, response));
+  ev.waitUntil(coordinatePurchaseWithUser(ev, response));
   return response;
 }
 
 // Handle back and forth between end-user and merchant
-async function coordiantePurchaseWithUser(ev, response) {
+async function coordinatePurchaseWithUser(ev, response) {
   const {request} = ev;
   // Handle the merchant calling PaymentRequest.abort()
   request.onabort = async() => {
@@ -53,18 +53,18 @@ async function coordiantePurchaseWithUser(ev, response) {
   };
   const result = await promisedPostMessage(client, msg);
   try {
-    await coordiateCommuncations(result, response, client);
+    await coordinateCommunications(result, response, client);
   } catch (err) {
-    response.compete("fail");
+    response.complete("fail");
   }
-  // The payment flow ends once payment is compete
+  // The payment flow ends once payment is complete
   const howDidItComplete = await response.isComplete;
   // Payment handlers can track if payments are succeeding per origin
   analytics(ev.origin, howDidItComplete);
   return;
 }
 
-async function coordiateCommuncations(result, response, client) {
+async function coordinateCommunications(result, response, client) {
   let msg;
   switch (result.action) {
   case "buy-it":
@@ -91,6 +91,6 @@ async function coordiateCommuncations(result, response, client) {
   if (msg) {
     // recursively repeat until the both parties and user says "buy-it".
     const endUserSays = await promisedPostMessage(client, msg);
-    await coordiateCommuncations(endUserSays, response, client);
+    await coordinateCommunications(endUserSays, response, client);
   }
 }
